@@ -1,0 +1,52 @@
+% =========================================================
+% ACTIVIDAD 02: BACKTRACKING Y GRAFO DIRIGIDO
+% Asignatura: Programación III
+% Estudiante: Estefania Osorio Romam
+% =========================================================
+
+% 1. BASE DE CONOCIMIENTO (Hechos del Grafo Dirigido)
+% arista(Origen, Destino, Costo)
+
+arista(vancouver, edmonton, 16).
+arista(vancouver, calgary, 13).
+arista(calgary, edmonton, 4).
+arista(calgary, regina, 14).
+arista(edmonton, saskatoon, 12).
+arista(saskatoon, calgary, 9).
+arista(saskatoon, winnipeg, 20).
+arista(regina, saskatoon, 7).
+arista(regina, winnipeg, 4).
+
+
+% 2. REGLAS SOLICITADAS
+
+% Regla 1: Determinar si un nodo tiene aristas (entrantes o salientes)
+tiene_aristas(Nodo) :- 
+    arista(Nodo, _, _).
+tiene_aristas(Nodo) :- 
+    arista(_, Nodo, _).
+
+% Regla 2: Determinar el costo para ir de X a Z pasando por Y
+costo_pasando_por(X, Y, Z, CostoTotal) :-
+    arista(X, Y, C1),
+    arista(Y, Z, C2),
+    CostoTotal is C1 + C2.
+
+
+% 3. ALGORITMO DE BÚSQUEDA CON BACKTRACKING (Camino entre nodos)
+
+camino(Origen, Destino, [Origen, Destino], Costo) :-
+    arista(Origen, Destino, Costo).
+
+camino(Origen, Destino, [Origen | Ruta], CostoTotal) :-
+    camino_aux(Origen, Destino, [Origen], Ruta, CostoTotal).
+
+camino_aux(Origen, Destino, _, [Destino], Costo) :-
+    arista(Origen, Destino, Costo).
+
+camino_aux(Origen, Destino, Visitados, [Intermedio | Ruta], CostoTotal) :-
+    arista(Origen, Intermedio, Costo1),
+    Intermedio \== Destino,
+    \+ member(Intermedio, Visitados),
+    camino_aux(Intermedio, Destino, [Intermedio | Visitados], Ruta, Costo2),
+    CostoTotal is Costo1 + Costo2.
